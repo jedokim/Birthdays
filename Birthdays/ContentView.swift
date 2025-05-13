@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Query private var friends: [Friend]
+    @Query(sort: \Friend.birthday, order: .reverse) private var friends: [Friend]
     @Environment(\.modelContext) private var context
     
     @State private var newName: String = ""
@@ -18,11 +18,14 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                List(friends, id: \.name) { friends in
+                List(friends) { friend in
                     HStack {
-                        Text(friends.name)
+                        if (friend.isBirthdayToday) {
+                            Image(systemName: "birthday.cake")
+                        }
+                        Text(friend.name)
                         Spacer()
-                        Text(friends.birthday, style: .date)
+                        Text(friend.birthday, style: .date)
                     }
                 }
             }
@@ -48,10 +51,10 @@ struct ContentView: View {
                 .padding()
                 .background(.bar)
             }
-            .task {
-                context.insert(Friend(name: "Jeremy Kim", birthday: .now))
-                context.insert(Friend(name: "Jedo Kim", birthday: Date(timeIntervalSince1970: 0)))
-            }
+//            .task { // pre populates data
+//                context.insert(Friend(name: "Jeremy Kim", birthday: .now))
+//                context.insert(Friend(name: "Jedo Kim", birthday: Date(timeIntervalSince1970: 0)))
+//            }
         }
     }
 }
